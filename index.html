@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<link rel="stylesheet" href="js/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="js/bootstrap/css/bootstrap-responsive.css">
+	<style type="text/css">
+	    body {
+		padding: 5px;
+	    }
+	    a {
+		cursor: pointer;
+	    }
+	    .available {
+		color: green;
+	    }
+	    .unavailable {
+		color: red;
+	    }
+	</style>
+    </head>
+    <body>
+	<div class="container-fluid">
+	    <div class="row-fluid">
+		<div class="span9">
+		    <table id="schedule" class="table table-bordered">
+			<thead>
+			    <tr>
+				<th>Times</th>
+				<th>Monday</th>
+				<th>Tuesday</th>
+				<th>Wednesday</th>
+				<th>Thursday</th>
+				<th>Friday</th>
+			    </tr>
+			</thead>
+			<tbody>
+			    <tr id="800">
+				<td>8:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="900">
+				<td>9:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="1000">
+				<td>10:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="1100">
+				<td>11:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="1200">
+				<td>12:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="1300">
+				<td>1:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="1400">
+				<td>2:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="1500">
+				<td>3:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="1600">
+				<td>4:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="1700">
+				<td>5:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="1800">
+				<td>6:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="1900">
+				<td>7:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="2000">
+				<td>8:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="2100">
+				<td>9:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			    <tr id="2200">
+				<td>10:00</td>
+				<td id="Monday"></td>
+				<td id="Tuesday"></td>
+				<td id="Wednesday"></td>
+				<td id="Thursday"></td>
+				<td id="Friday"></td>
+			    </tr>
+			</tbody>
+		    </table>
+		</div>
+		<div class="span3 well">
+		    <a data-toggle="collapse" data-target="#createSectionAccordion">
+			Create Section
+		    </a>
+		    <div id="createSectionAccordion" class="collapse">
+			<input type="text" id="section-name" placeholder="Name" />
+			<input type="text" id="section-time" placeholder="Time (military, no colon)" />	
+			<select id="section-day">
+			    <option val="Monday">Monday</option>
+			    <option val="Tuesday">Tuesday</option>
+			    <option val="Wednesday">Wednesday</option>
+			    <option val="Thursday">Thursday</option>
+			    <option val="Friday">Friday</option>
+			</select>
+			<button type="button" id="create-section" class="btn btn-primary">Create Section</button>
+		    </div>
+		    <a data-toggle="collapse" data-target="#createSLAccordion">
+			Create SL
+		    </a>
+		    <div id="createSLAccordion" class="collapse">
+			<input type="text" id="sl-name" placeholder="Name" />
+			<button type="button" id="create-sl" class="btn btn-primary">Create SL</button>
+		    </div>
+		    <hr>
+		    <div id="slDiv">
+		      <h5>SL List</h5>
+		    </div>
+		    <div id="section-info" class="collapse">
+		      <hr>
+		      <h4 id="section-info-name"></h4>
+		      <select id="section-info-select"></select>
+		      <button type="button" class="btn btn-primary" id="choose-sl">Choose SL</button>
+		    </div>
+		</div>
+	    </div>
+	</div>
+
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+	<script src="js/bootstrap/js/bootstrap.js"></script>
+	<script src="js/Section.js"></script>
+	<script src="js/SL.js"></script>
+	<script type="text/javascript">
+	    
+	    //Overwrite Array remove
+	    Array.prototype.remove = function(from, to) {
+		var rest = this.slice((to || from) + 1 || this.length);
+		this.length = from < 0 ? this.length + from : from;
+		return this.push.apply(this, rest);
+	    };
+	    
+	    //Section List
+	    var sectionList = new Array();
+	    //SL List
+	    var slList = new Array();
+	    
+	    $(document).ready(function() {
+		$("button#create-section").click(function() {
+		    var name = $("input#section-name").val().replace(/ /g, "_");
+		    var time = $("input#section-time").val();
+		    var day = $("select#section-day option:selected").val();
+		    createSection(time, day, name);
+		});
+
+		$("button#create-sl").click(function() {
+		    var name = $("input#sl-name").val();
+		    var s = new SL(name);
+		    slList.push(s);
+		    var slAlert = "<span>" + name + " </span>";
+		    var clone = $(slAlert).clone();
+		    $(clone).draggable({
+			revert: true,
+			cursor: "move"
+		    });
+		    $("#slDiv").append(clone);
+		});
+
+		$("button#choose-sl").click(function() {
+		    //Add SL as final
+		    var sectionName = $("#section-info-name").text();
+		    var slName = $("#section-info-select option:selected").val();
+		    var section;
+		    var sl;
+		    //Find them in their arrays
+		    //TODO: make this a function
+		    for (var i = 0; i < sectionList.length; i++) {
+			if (sectionName == sectionList[i].name) {
+			    section = sectionList[i];
+			}
+		    }
+		    for (var i = 0; i < slList.length; i++) {
+			if (slName == slList[i].name) {
+			    sl = slList[i];
+			}
+		    }
+		    //Iterate through all spans and set available or unavailable
+		    $.each($("div.sls").find('span'), function() {
+			if (slName == "--None--" && section.getFinalSL() != null  && section.getFinalSL().getName() == $(this).text().trim()) {
+			    $(this).removeClass('unavailable');
+			    $(this).addClass('available');
+			}
+			else if ($(this).text().trim() == slName) {
+			    $(this).removeClass('available');
+			    $(this).addClass('unavailable');
+			}
+		    });
+		    $.each($("div#" + sectionName).find('span'), function() {
+			if (slName == "--None--") {
+			    $(this).removeClass('unavailable');
+			    $(this).addClass('available');
+			}
+			else if ($(this).text().trim() == slName) {
+			    $(this).removeClass('unavailable');
+			    $(this).addClass('available');
+			} else {
+			    $(this).removeClass('available');
+			    $(this).addClass('unavailable');
+			}
+		    });
+		    if (slName == "--None--" && section.getFinalSL() != null) {
+			section.unsetFinalSL(section.getFinalSL());
+		    } else {
+			section.setFinalSL(sl);
+		    }
+
+		});
+
+		$(document).on('click', 'button.close', function() {
+		    //Delete section
+		    var name = $(this).parent().attr('id');
+		    for (var i = 0; i < sectionList.length; i++) {
+			if (sectionList[i].name == name) {
+			    sectionList.remove(i);
+			}
+		    }
+		    $(this).parent().remove(); 
+		});
+
+	    });
+	    
+	    //TODO: create delete sl functionality
+
+	    function createSection(time, day, name) {
+		var s = new Section(time, day, name);
+		sectionList.push(s);
+		var sectionDiv = "<div id='" + name + "' class='alert'><button type='button' class='close'>&times;</button><a onclick='sectionInfo(this)'>" + name + "</a><div class='sls'></div></div>";
+		var clone = $(sectionDiv).clone();
+		$(clone).droppable({
+		    hoverClass: "alert-success",
+		    drop: function(event, ui) {
+			$(this).find("div.sls").append("<span class='available'>" + $(ui.draggable).text() + "</span>");
+			var index = sectionList.indexOf(s);
+			sectionList[index].addPossibleSL($(ui.draggable).text().trim());
+		      }
+		});
+		$("table#schedule tbody tr#" + time).find("#" + day).append(clone);
+	    }
+
+	    function sectionInfo(link) {
+		//Show section info
+		var div = $(link).parent();
+		//Empty the select
+		$("#section-info-select").empty();
+		//Add 'None' option 
+		$('#section-info-select').append("<option>--None--</option>");
+		$.each($(div).find('span'), function() {
+		    $("#section-info-select").append("<option>" + $(this).text().trim() + "</option>");
+		});
+		$("#section-info-name").text($(div).find('a').text());
+		//Show info div
+		$("#section-info").collapse('show');
+
+	    }
+
+	</script>
+    </body>
+</html>
