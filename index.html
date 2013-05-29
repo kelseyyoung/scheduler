@@ -3,6 +3,7 @@
     <head>
 	<link rel="stylesheet" href="js/bootstrap/css/bootstrap.css">
 	<link rel="stylesheet" href="js/bootstrap/css/bootstrap-responsive.css">
+	<title>Scheduler</title>
 	<style type="text/css">
 	    body {
 		padding: 5px;
@@ -16,12 +17,19 @@
 	    .unavailable {
 		color: red;
 	    }
+	    div#table-wrapper {
+	      overflow: auto;
+	    }
+	    table#schedule {
+	      table-layout: fixed;
+	      width: 1000px;
+	    }
 	</style>
     </head>
     <body>
 	<div class="container-fluid">
 	    <div class="row-fluid">
-		<div class="span9">
+		<div id="table-wrapper" class="span9">
 		    <table id="schedule" class="table table-bordered">
 			<thead>
 			    <tr>
@@ -163,7 +171,23 @@
 		    </a>
 		    <div id="createTimeslotAccordion" class="collapse">
 			<input type="text" id="timeslot-name" placeholder="Name" />
-			<input type="text" id="timeslot-time" placeholder="Time (military, no colon)" />	
+			<select id="timeslot-time">
+			  <option value="800">8:00am</option>
+			  <option value="900">9:00am</option>
+			  <option value="1000">10:00am</option>
+			  <option value="1100">11:00am</option>
+			  <option value="1200">12:00pm</option>
+			  <option value="1300">1:00pm</option>
+			  <option value="1400">2:00pm</option>
+			  <option value="1500">3:00pm</option>
+			  <option value="1600">4:00pm</option>
+			  <option value="1700">5:00pm</option>
+			  <option value="1800">6:00pm</option>
+			  <option value="1900">7:00pm</option>
+			  <option value="2000">8:00pm</option>
+			  <option value="2100">9:00pm</option>
+			  <option value="2200">10:00pm</option>
+			</select>
 			<select id="timeslot-day">
 			    <option val="Monday">Monday</option>
 			    <option val="Tuesday">Tuesday</option>
@@ -200,6 +224,17 @@
 	<script src="js/Timeslot.js"></script>
 	<script src="js/Worker.js"></script>
 	<script type="text/javascript">
+
+	    /*TODO:
+	      - changing final worker doesn't work; previous still unavailable in 
+		other timeslots
+	      - delete worker functionality
+	      - timeslots of different length
+	      - timeslots starting and ending at different points
+	      - add all workers to all timeslots
+	      - setup page?
+	      - export to excel?
+	    */
 	    
 	    //Overwrite Array remove
 	    Array.prototype.remove = function(from, to) {
@@ -216,42 +251,35 @@
 	    $(document).ready(function() {
 		$("button#create-timeslot").click(function() {
 		    var name = $("input#timeslot-name").val().replace(/ /g, "_");
-		    var time = $("input#timeslot-time").val();
-		    var day = $("select#timeslot-day option:selected").val();
-		    createTimeslot(time, day, name);
+		    if (!find(timeslotList, name)) {
+		      var time = $("select#timeslot-time").val();
+		      var day = $("select#timeslot-day option:selected").val();
+		      createTimeslot(time, day, name);
+		    }
 		});
 
 		$("button#create-worker").click(function() {
 		    var name = $("input#worker-name").val();
-		    var s = new Worker(name);
-		    workerList.push(s);
-		    var workerAlert = "<span>" + name + " </span>";
-		    var clone = $(workerAlert).clone();
-		    $(clone).draggable({
-			revert: true,
-			cursor: "move"
-		    });
-		    $("#workerDiv").append(clone);
+		    if (!find(workerList, name)) {
+		      var s = new Worker(name);
+		      workerList.push(s);
+		      var workerAlert = "<span>" + name + " </span>";
+		      var clone = $(workerAlert).clone();
+		      $(clone).draggable({
+			  revert: true,
+			  cursor: "move"
+		      });
+		      $("#workerDiv").append(clone);
+		    }
 		});
 
 		$("button#choose-worker").click(function() {
 		    //Add Worker as final
 		    var timeslotName = $("#timeslot-info-name").text();
 		    var workerName = $("#timeslot-info-select option:selected").val();
-		    var timeslot;
-		    var worker;
 		    //Find them in their arrays
-		    //TODO: make this a function
-		    for (var i = 0; i < timeslotList.length; i++) {
-			if (timeslotName == timeslotList[i].name) {
-			    timeslot = timeslotList[i];
-			}
-		    }
-		    for (var i = 0; i < workerList.length; i++) {
-			if (workerName == workerList[i].name) {
-			    worker = workerList[i];
-			}
-		    }
+		    var timeslot = find(timeslotList, timeslotName);
+		    var worker = find(workerList, workerName);
 		    //Iterate through all spans and set available or unavailable
 		    $.each($("div.workers").find('span'), function() {
 			if (workerName == "--None--" && timeslot.getFinalWorker() != null  && timeslot.getFinalWorker().getName() == $(this).text().trim()) {
@@ -296,8 +324,15 @@
 		});
 
 	    });
-	    
-	    //TODO: create delete worker functionality
+
+	    function find(list, name) {
+	      for (var i = 0; i < list.length; i++) {
+		if (name == list[i].name) {
+		  return list[i];
+		}
+	      }
+	      return null;
+	    }
 
 	    function createTimeslot(time, day, name) {
 		var s = new Timeslot(time, day, name);
