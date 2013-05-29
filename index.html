@@ -158,37 +158,37 @@
 		    </table>
 		</div>
 		<div class="span3 well">
-		    <a data-toggle="collapse" data-target="#createSectionAccordion">
-			Create Section
+		    <a data-toggle="collapse" data-target="#createTimeslotAccordion">
+			Create Timeslot
 		    </a>
-		    <div id="createSectionAccordion" class="collapse">
-			<input type="text" id="section-name" placeholder="Name" />
-			<input type="text" id="section-time" placeholder="Time (military, no colon)" />	
-			<select id="section-day">
+		    <div id="createTimeslotAccordion" class="collapse">
+			<input type="text" id="timeslot-name" placeholder="Name" />
+			<input type="text" id="timeslot-time" placeholder="Time (military, no colon)" />	
+			<select id="timeslot-day">
 			    <option val="Monday">Monday</option>
 			    <option val="Tuesday">Tuesday</option>
 			    <option val="Wednesday">Wednesday</option>
 			    <option val="Thursday">Thursday</option>
 			    <option val="Friday">Friday</option>
 			</select>
-			<button type="button" id="create-section" class="btn btn-primary">Create Section</button>
+			<button type="button" id="create-timeslot" class="btn btn-primary">Create Timeslot</button>
 		    </div>
-		    <a data-toggle="collapse" data-target="#createSLAccordion">
-			Create SL
+		    <a data-toggle="collapse" data-target="#createWorkerAccordion">
+			Create Worker
 		    </a>
-		    <div id="createSLAccordion" class="collapse">
-			<input type="text" id="sl-name" placeholder="Name" />
-			<button type="button" id="create-sl" class="btn btn-primary">Create SL</button>
+		    <div id="createWorkerAccordion" class="collapse">
+			<input type="text" id="worker-name" placeholder="Name" />
+			<button type="button" id="create-worker" class="btn btn-primary">Create Worker</button>
 		    </div>
 		    <hr>
-		    <div id="slDiv">
-		      <h5>SL List</h5>
+		    <div id="workerDiv">
+		      <h5>Worker List</h5>
 		    </div>
-		    <div id="section-info" class="collapse">
+		    <div id="timeslot-info" class="collapse">
 		      <hr>
-		      <h4 id="section-info-name"></h4>
-		      <select id="section-info-select"></select>
-		      <button type="button" class="btn btn-primary" id="choose-sl">Choose SL</button>
+		      <h4 id="timeslot-info-name"></h4>
+		      <select id="timeslot-info-select"></select>
+		      <button type="button" class="btn btn-primary" id="choose-worker">Choose Worker</button>
 		    </div>
 		</div>
 	    </div>
@@ -197,8 +197,8 @@
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 	<script src="js/bootstrap/js/bootstrap.js"></script>
-	<script src="js/Section.js"></script>
-	<script src="js/SL.js"></script>
+	<script src="js/Timeslot.js"></script>
+	<script src="js/Worker.js"></script>
 	<script type="text/javascript">
 	    
 	    //Overwrite Array remove
@@ -208,67 +208,67 @@
 		return this.push.apply(this, rest);
 	    };
 	    
-	    //Section List
-	    var sectionList = new Array();
-	    //SL List
-	    var slList = new Array();
+	    //Timeslot List
+	    var timeslotList = new Array();
+	    //Worker List
+	    var workerList = new Array();
 	    
 	    $(document).ready(function() {
-		$("button#create-section").click(function() {
-		    var name = $("input#section-name").val().replace(/ /g, "_");
-		    var time = $("input#section-time").val();
-		    var day = $("select#section-day option:selected").val();
-		    createSection(time, day, name);
+		$("button#create-timeslot").click(function() {
+		    var name = $("input#timeslot-name").val().replace(/ /g, "_");
+		    var time = $("input#timeslot-time").val();
+		    var day = $("select#timeslot-day option:selected").val();
+		    createTimeslot(time, day, name);
 		});
 
-		$("button#create-sl").click(function() {
-		    var name = $("input#sl-name").val();
-		    var s = new SL(name);
-		    slList.push(s);
-		    var slAlert = "<span>" + name + " </span>";
-		    var clone = $(slAlert).clone();
+		$("button#create-worker").click(function() {
+		    var name = $("input#worker-name").val();
+		    var s = new Worker(name);
+		    workerList.push(s);
+		    var workerAlert = "<span>" + name + " </span>";
+		    var clone = $(workerAlert).clone();
 		    $(clone).draggable({
 			revert: true,
 			cursor: "move"
 		    });
-		    $("#slDiv").append(clone);
+		    $("#workerDiv").append(clone);
 		});
 
-		$("button#choose-sl").click(function() {
-		    //Add SL as final
-		    var sectionName = $("#section-info-name").text();
-		    var slName = $("#section-info-select option:selected").val();
-		    var section;
-		    var sl;
+		$("button#choose-worker").click(function() {
+		    //Add Worker as final
+		    var timeslotName = $("#timeslot-info-name").text();
+		    var workerName = $("#timeslot-info-select option:selected").val();
+		    var timeslot;
+		    var worker;
 		    //Find them in their arrays
 		    //TODO: make this a function
-		    for (var i = 0; i < sectionList.length; i++) {
-			if (sectionName == sectionList[i].name) {
-			    section = sectionList[i];
+		    for (var i = 0; i < timeslotList.length; i++) {
+			if (timeslotName == timeslotList[i].name) {
+			    timeslot = timeslotList[i];
 			}
 		    }
-		    for (var i = 0; i < slList.length; i++) {
-			if (slName == slList[i].name) {
-			    sl = slList[i];
+		    for (var i = 0; i < workerList.length; i++) {
+			if (workerName == workerList[i].name) {
+			    worker = workerList[i];
 			}
 		    }
 		    //Iterate through all spans and set available or unavailable
-		    $.each($("div.sls").find('span'), function() {
-			if (slName == "--None--" && section.getFinalSL() != null  && section.getFinalSL().getName() == $(this).text().trim()) {
+		    $.each($("div.workers").find('span'), function() {
+			if (workerName == "--None--" && timeslot.getFinalWorker() != null  && timeslot.getFinalWorker().getName() == $(this).text().trim()) {
 			    $(this).removeClass('unavailable');
 			    $(this).addClass('available');
 			}
-			else if ($(this).text().trim() == slName) {
+			else if ($(this).text().trim() == workerName) {
 			    $(this).removeClass('available');
 			    $(this).addClass('unavailable');
 			}
 		    });
-		    $.each($("div#" + sectionName).find('span'), function() {
-			if (slName == "--None--") {
+		    $.each($("div#" + timeslotName).find('span'), function() {
+			if (workerName == "--None--") {
 			    $(this).removeClass('unavailable');
 			    $(this).addClass('available');
 			}
-			else if ($(this).text().trim() == slName) {
+			else if ($(this).text().trim() == workerName) {
 			    $(this).removeClass('unavailable');
 			    $(this).addClass('available');
 			} else {
@@ -276,20 +276,20 @@
 			    $(this).addClass('unavailable');
 			}
 		    });
-		    if (slName == "--None--" && section.getFinalSL() != null) {
-			section.unsetFinalSL(section.getFinalSL());
+		    if (workerName == "--None--" && timeslot.getFinalWorker() != null) {
+			timeslot.unsetFinalWorker(timeslot.getFinalWorker());
 		    } else {
-			section.setFinalSL(sl);
+			timeslot.setFinalWorker(worker);
 		    }
 
 		});
 
 		$(document).on('click', 'button.close', function() {
-		    //Delete section
+		    //Delete timeslot
 		    var name = $(this).parent().attr('id');
-		    for (var i = 0; i < sectionList.length; i++) {
-			if (sectionList[i].name == name) {
-			    sectionList.remove(i);
+		    for (var i = 0; i < timeslotList.length; i++) {
+			if (timeslotList[i].name == name) {
+			    timeslotList.remove(i);
 			}
 		    }
 		    $(this).parent().remove(); 
@@ -297,37 +297,37 @@
 
 	    });
 	    
-	    //TODO: create delete sl functionality
+	    //TODO: create delete worker functionality
 
-	    function createSection(time, day, name) {
-		var s = new Section(time, day, name);
-		sectionList.push(s);
-		var sectionDiv = "<div id='" + name + "' class='alert'><button type='button' class='close'>&times;</button><a onclick='sectionInfo(this)'>" + name + "</a><div class='sls'></div></div>";
-		var clone = $(sectionDiv).clone();
+	    function createTimeslot(time, day, name) {
+		var s = new Timeslot(time, day, name);
+		timeslotList.push(s);
+		var timeslotDiv = "<div id='" + name + "' class='alert'><button type='button' class='close'>&times;</button><a onclick='timeslotInfo(this)'>" + name + "</a><div class='workers'></div></div>";
+		var clone = $(timeslotDiv).clone();
 		$(clone).droppable({
 		    hoverClass: "alert-success",
 		    drop: function(event, ui) {
-			$(this).find("div.sls").append("<span class='available'>" + $(ui.draggable).text() + "</span>");
-			var index = sectionList.indexOf(s);
-			sectionList[index].addPossibleSL($(ui.draggable).text().trim());
+			$(this).find("div.workers").append("<span class='available'>" + $(ui.draggable).text() + "</span>");
+			var index = timeslotList.indexOf(s);
+			timeslotList[index].addPossibleWorker($(ui.draggable).text().trim());
 		      }
 		});
 		$("table#schedule tbody tr#" + time).find("#" + day).append(clone);
 	    }
 
-	    function sectionInfo(link) {
-		//Show section info
+	    function timeslotInfo(link) {
+		//Show timeslot info
 		var div = $(link).parent();
 		//Empty the select
-		$("#section-info-select").empty();
+		$("#timeslot-info-select").empty();
 		//Add 'None' option 
-		$('#section-info-select').append("<option>--None--</option>");
+		$('#timeslot-info-select').append("<option>--None--</option>");
 		$.each($(div).find('span'), function() {
-		    $("#section-info-select").append("<option>" + $(this).text().trim() + "</option>");
+		    $("#timeslot-info-select").append("<option>" + $(this).text().trim() + "</option>");
 		});
-		$("#section-info-name").text($(div).find('a').text());
+		$("#timeslot-info-name").text($(div).find('a').text());
 		//Show info div
-		$("#section-info").collapse('show');
+		$("#timeslot-info").collapse('show');
 
 	    }
 
