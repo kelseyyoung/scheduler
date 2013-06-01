@@ -209,6 +209,7 @@
 		    </div>
 		    <hr>
 		    <div id="workerDiv">
+		      <button type="button" class="btn btn-mini pull-right" onclick="addAll();">Add All</button>
 		      <h5>Worker List</h5>
 		    </div>
 		    <div id="timeslot-info" class="collapse">
@@ -232,10 +233,11 @@
 	      - drag workers to timeslot in sidebar? so it's not so far to drag
 	      - if worker is already final, and you add them to a new timeslot,
 		they are available in the new timeslot
+	      - BUG: choose final worker that is already chosen as another final
+		worker, and now both are final
 	      - delete worker functionality
 	      - timeslots of different length
 	      - timeslots starting and ending at different points
-	      - add all workers to all timeslots
 	      - setup page?
 	      - export to excel?
 	    */
@@ -267,15 +269,7 @@
 		    var name = $("input#worker-name").val().replace(/ /g, "_");
 		    //Prevent duplicates
 		    if (!find(workerList, name)) {
-		      var s = new Worker(name);
-		      workerList.push(s);
-		      var workerAlert = "<span>" + name + " </span>";
-		      var clone = $(workerAlert).clone();
-		      $(clone).draggable({
-			  revert: true,
-			  cursor: "move"
-		      });
-		      $("#workerDiv").append(clone);
+		      createWorker(name);
 		    }
 		});
 
@@ -306,7 +300,6 @@
 		    //to unavailable
 		    for (var i = 0; i < workerList.length; i++) {
 		      var worker = workerList[i];
-		      console.log(worker);
 		      if (worker.isFinal) {
 			$.each($("span." + worker.name), function() {
 			  $(this).attr('class', worker.name);
@@ -349,6 +342,20 @@
 
 	    /** Functions **/
 
+	    function addAll() {
+	      $.each(timeslotList, function(tindex, tvalue) {
+		var div = $("div#" + tvalue.name);
+		console.log($(div));
+		$.each(workerList, function(windex, wvalue) {
+		  var name = wvalue.name;
+		  $(div).find("div.workers").append("<span class='available " + name + "'>" + name + " </span>");
+		  var index = timeslotList.indexOf(tvalue);
+		  timeslotList[index].addPossibleWorker(name);
+		});
+	      });
+	      console.log(timeslotList);
+	    }
+
 	    function reset() {
 	      //Iterate through all worker spans and set them to available
 	      $.each($("div.workers > span"), function() {
@@ -366,6 +373,18 @@
 	      return null;
 	    }
 
+	    function createWorker(name) {
+	      var s = new Worker(name);
+	      workerList.push(s);
+	      var workerAlert = "<span>" + name + " </span>";
+	      var clone = $(workerAlert).clone();
+	      $(clone).draggable({
+		  revert: true,
+		  cursor: "move"
+	      });
+	      $("#workerDiv").append(clone);
+	    }
+
 	    function createTimeslot(time, day, name) {
 		var s = new Timeslot(time, day, name);
 		timeslotList.push(s);
@@ -374,10 +393,13 @@
 		$(clone).droppable({
 		    hoverClass: "alert-success",
 		    drop: function(event, ui) {
-			//TODO: prevent duplicates when dropping
-			$(this).find("div.workers").append("<span class='available " + $(ui.draggable).text().trim() + "'>" + $(ui.draggable).text() + "</span>");
-			var index = timeslotList.indexOf(s);
-			timeslotList[index].addPossibleWorker($(ui.draggable).text().trim());
+			var name = $(ui.draggable).text().trim();
+			var exists = $(this).find("div.workers > span." + name).length;
+			if (!exists) {
+			  $(this).find("div.workers").append("<span class='available " + name + "'>" + name + " </span>");
+			  var index = timeslotList.indexOf(s);
+			  timeslotList[index].addPossibleWorker(name);
+			}
 		      }
 		});
 		$("table#schedule tbody tr#" + time).find("#" + day).append(clone);
