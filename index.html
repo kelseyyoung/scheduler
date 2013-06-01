@@ -17,6 +17,9 @@
 	    .unavailable {
 		color: red;
 	    }
+	    .final {
+		color: blue;
+	    }
 	    div#table-wrapper {
 	      overflow: auto;
 	    }
@@ -226,8 +229,9 @@
 	<script type="text/javascript">
 
 	    /*TODO:
-	      - changing final worker doesn't work; previous still unavailable in 
-		other timeslots
+	      - drag workers to timeslot in sidebar? so it's not so far to drag
+	      - if worker is already final, and you add them to a new timeslot,
+		they are available in the new timeslot
 	      - delete worker functionality
 	      - timeslots of different length
 	      - timeslots starting and ending at different points
@@ -251,6 +255,7 @@
 	    $(document).ready(function() {
 		$("button#create-timeslot").click(function() {
 		    var name = $("input#timeslot-name").val().replace(/ /g, "_");
+		    //Prevent duplicates
 		    if (!find(timeslotList, name)) {
 		      var time = $("select#timeslot-time").val();
 		      var day = $("select#timeslot-day option:selected").val();
@@ -259,7 +264,8 @@
 		});
 
 		$("button#create-worker").click(function() {
-		    var name = $("input#worker-name").val();
+		    var name = $("input#worker-name").val().replace(/ /g, "_");
+		    //Prevent duplicates
 		    if (!find(workerList, name)) {
 		      var s = new Worker(name);
 		      workerList.push(s);
@@ -280,34 +286,50 @@
 		    //Find them in their arrays
 		    var timeslot = find(timeslotList, timeslotName);
 		    var worker = find(workerList, workerName);
-		    //Iterate through all spans and set available or unavailable
-		    $.each($("div.workers").find('span'), function() {
-			if (workerName == "--None--" && timeslot.getFinalWorker() != null  && timeslot.getFinalWorker().getName() == $(this).text().trim()) {
-			    $(this).removeClass('unavailable');
-			    $(this).addClass('available');
-			}
-			else if ($(this).text().trim() == workerName) {
-			    $(this).removeClass('available');
-			    $(this).addClass('unavailable');
-			}
-		    });
-		    $.each($("div#" + timeslotName).find('span'), function() {
-			if (workerName == "--None--") {
-			    $(this).removeClass('unavailable');
-			    $(this).addClass('available');
-			}
-			else if ($(this).text().trim() == workerName) {
-			    $(this).removeClass('unavailable');
-			    $(this).addClass('available');
-			} else {
-			    $(this).removeClass('available');
-			    $(this).addClass('unavailable');
-			}
-		    });
-		    if (workerName == "--None--" && timeslot.getFinalWorker() != null) {
-			timeslot.unsetFinalWorker(timeslot.getFinalWorker());
+		    var oldFinalWorker = timeslot.getFinalWorker();
+		    //Set objects
+		    if (workerName != "--None--") {
+		      worker.setIsFinal(true);
+		      if (oldFinalWorker) {
+			oldFinalWorker.setIsFinal(false);
+		      }
+		      timeslot.setFinalWorker(worker);
 		    } else {
-			timeslot.setFinalWorker(worker);
+		      if (oldFinalWorker) {
+			oldFinalWorker.setIsFinal(false);
+		      }
+		      timeslot.setFinalWorker(null);
+		    }
+		    //Reset everyone to available
+		    reset();
+		    //Iterate through all workers, if they are final, set all spans
+		    //to unavailable
+		    for (var i = 0; i < workerList.length; i++) {
+		      var worker = workerList[i];
+		      console.log(worker);
+		      if (worker.isFinal) {
+			$.each($("span." + worker.name), function() {
+			  $(this).attr('class', worker.name);
+			  $(this).addClass('unavailable');
+			});
+		      }
+		    }
+		    //Iterate through all timeslots, if they have a final,
+		    //set that worker to final, and set everyone else to unavailable
+		    for (var i = 0; i < timeslotList.length; i++) {
+		      var timeslot = timeslotList[i];
+		      if (timeslot.getFinalWorker()) {
+			var spans = $("div#" + timeslot.name + " > div.workers > span");
+			$.each(spans, function() { 
+			  if ($(this).text().trim() == timeslot.getFinalWorker().name) {
+			    $(this).attr('class', $(this).text().trim());
+			    $(this).addClass('final');
+			  } else {
+			    $(this).attr('class', $(this).text().trim());
+			    $(this).addClass('unavailable');
+			  }
+			});
+		      }
 		    }
 
 		});
@@ -324,6 +346,16 @@
 		});
 
 	    });
+
+	    /** Functions **/
+
+	    function reset() {
+	      //Iterate through all worker spans and set them to available
+	      $.each($("div.workers > span"), function() {
+		$(this).attr('class', $(this).text().trim());
+		$(this).addClass('available');
+	      });
+	    }
 
 	    function find(list, name) {
 	      for (var i = 0; i < list.length; i++) {
@@ -342,7 +374,8 @@
 		$(clone).droppable({
 		    hoverClass: "alert-success",
 		    drop: function(event, ui) {
-			$(this).find("div.workers").append("<span class='available'>" + $(ui.draggable).text() + "</span>");
+			//TODO: prevent duplicates when dropping
+			$(this).find("div.workers").append("<span class='available " + $(ui.draggable).text().trim() + "'>" + $(ui.draggable).text() + "</span>");
 			var index = timeslotList.indexOf(s);
 			timeslotList[index].addPossibleWorker($(ui.draggable).text().trim());
 		      }
@@ -356,11 +389,18 @@
 		//Empty the select
 		$("#timeslot-info-select").empty();
 		//Add 'None' option 
-		$('#timeslot-info-select').append("<option>--None--</option>");
+		$('#timeslot-info-select').append("<option value='none'>--None--</option>");
 		$.each($(div).find('span'), function() {
-		    $("#timeslot-info-select").append("<option>" + $(this).text().trim() + "</option>");
+		    $("#timeslot-info-select").append("<option value='" + $(this).text().trim() + "'>" + $(this).text().trim() + "</option>");
 		});
-		$("#timeslot-info-name").text($(div).find('a').text());
+		var timeslotName = $(div).find('a').text();
+		var timeslot = find(timeslotList, timeslotName);
+		if (timeslot.getFinalWorker() == null) {
+		  $("#timeslot-info-select").val('none');
+		} else {
+		  $("#timeslot-info-select").val(timeslot.getFinalWorker().name);
+		}
+		$("#timeslot-info-name").text(timeslotName);
 		//Show info div
 		$("#timeslot-info").collapse('show');
 
