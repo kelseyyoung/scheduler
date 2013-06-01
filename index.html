@@ -3,6 +3,7 @@
     <head>
 	<link rel="stylesheet" href="js/bootstrap/css/bootstrap.css">
 	<link rel="stylesheet" href="js/bootstrap/css/bootstrap-responsive.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css">
 	<title>Scheduler</title>
 	<style type="text/css">
 	    body {
@@ -26,6 +27,9 @@
 	    table#schedule {
 	      table-layout: fixed;
 	      width: 1000px;
+	    }
+	    div.well.well-small.no-margin {
+	      margin: 0px;
 	    }
 	</style>
     </head>
@@ -168,13 +172,15 @@
 			</tbody>
 		    </table>
 		</div>
-		<div class="span3 well">
-		    <a data-toggle="collapse" data-target="#createTimeslotAccordion">
+		<div class="span3 well well-small">
+		  <div class="well well-small no-margin">
+		    <a data-toggle="collapse" class="caret-change" data-target="#createTimeslotAccordion">
 			Create Timeslot
+			<i class="pull-right icon-caret-right"></i>
 		    </a>
 		    <div id="createTimeslotAccordion" class="collapse">
-			<input type="text" id="timeslot-name" placeholder="Name" />
-			<select id="timeslot-time">
+			<input type="text" class="span10" id="timeslot-name" placeholder="Name" />
+			<select class="span10" id="timeslot-time">
 			  <option value="800">8:00am</option>
 			  <option value="900">9:00am</option>
 			  <option value="1000">10:00am</option>
@@ -191,7 +197,7 @@
 			  <option value="2100">9:00pm</option>
 			  <option value="2200">10:00pm</option>
 			</select>
-			<select id="timeslot-day">
+			<select class="span10" id="timeslot-day">
 			    <option val="Monday">Monday</option>
 			    <option val="Tuesday">Tuesday</option>
 			    <option val="Wednesday">Wednesday</option>
@@ -200,12 +206,16 @@
 			</select>
 			<button type="button" id="create-timeslot" class="btn btn-primary">Create Timeslot</button>
 		    </div>
-		    <a data-toggle="collapse" data-target="#createWorkerAccordion">
+		  </div>
+		    <div class="well well-small">
+		    <a data-toggle="collapse" class="caret-change" data-target="#createWorkerAccordion">
 			Create Worker
+			<i class="pull-right icon-caret-right"></i>
 		    </a>
 		    <div id="createWorkerAccordion" class="collapse">
-			<input type="text" id="worker-name" placeholder="Name" />
+			<input type="text" class="span10" id="worker-name" placeholder="Name" />
 			<button type="button" id="create-worker" class="btn btn-primary">Create Worker</button>
+		    </div>
 		    </div>
 		    <hr>
 		    <div id="workerDiv">
@@ -255,6 +265,18 @@
 	    var workerList = new Array();
 	    
 	    $(document).ready(function() {
+
+		$(".caret-change").on('click', function() {
+		  var icon = $(this).find('i');
+		  if ($(icon).hasClass("icon-caret-right")) {
+		    $(icon).removeClass("icon-caret-right");
+		    $(icon).addClass("icon-caret-down");
+		  } else {
+		    $(icon).removeClass("icon-caret-down");
+		    $(icon).addClass("icon-caret-right");
+		  }
+		});
+
 		$("button#create-timeslot").click(function() {
 		    var name = $("input#timeslot-name").val().replace(/ /g, "_");
 		    //Prevent duplicates
