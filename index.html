@@ -31,6 +31,9 @@
 	    div.well.well-small.no-margin {
 	      margin: 0px;
 	    }
+	    span.label {
+	      margin-right: 2px;
+	    }
 	    span.label > button.close {
 	      line-height: 14px;
 	      margin-top: -3px;
@@ -244,7 +247,6 @@
 	<script type="text/javascript">
 
 	    /*TODO:
-	      - BUG: need to update on delete timeslot
 	      - drag workers to timeslot in sidebar? so it's not so far to drag
 		they are available in the new timeslot
 	      - timeslots of different length
@@ -267,6 +269,7 @@
 	    
 	    $(document).ready(function() {
 
+		//Caret changing for dropdowns
 		$(".caret-change").on('click', function() {
 		  var icon = $(this).find('i');
 		  if ($(icon).hasClass("icon-caret-right")) {
@@ -278,6 +281,7 @@
 		  }
 		});
 
+		//Create timeslot onclick
 		$("button#create-timeslot").click(function() {
 		    var name = $("input#timeslot-name").val().replace(/ /g, "_");
 		    //Prevent duplicates
@@ -288,6 +292,7 @@
 		    }
 		});
 
+		//Create worker onclick
 		$("button#create-worker").click(function() {
 		    var name = $("input#worker-name").val().replace(/ /g, "_");
 		    //Prevent duplicates
@@ -296,6 +301,8 @@
 		    }
 		});
 
+		//Choose worker onclick
+		//TODO: can this be cleaned up?
 		$("button#choose-worker").click(function() {
 		  //Get data
 		  var timeslotName = $("#timeslot-info-name").text();
@@ -303,37 +310,37 @@
 		  //Find them in their arrays
 		  var timeslot = find(timeslotList, timeslotName);
 		  var worker = find(workerList, workerName);
-		  var oldFinalWorker = timeslot.getFinalWorker();
+		  var oldFinalWorker = timeslot.finalWorker;
 		  //Set objects
 		  if (workerName != "none") {
 		    if (worker.finalTimeslot) {
 		      worker.finalTimeslot.finalWorker = null;
 		      worker.finalTimeslot = null;
 		    }
-		    worker.setIsFinal(true);
+		    worker.isFinal = true;
 		    worker.finalTimeslot = timeslot;
 		    if (oldFinalWorker) {
 		      oldFinalWorker.finalTimeslot = null;
-		      oldFinalWorker.setIsFinal(false);
+		      oldFinalWorker.isFinal = false;
 		    }
-		    timeslot.setFinalWorker(worker);
+		    timeslot.finalWorker = worker;
 		  } else {
 		    if (oldFinalWorker) {
-		      oldFinalWorker.setIsFinal(false);
+		      oldFinalWorker.isFinal = false;
 		    }
 		    if (worker.finalTimeslot) {
 		      worker.finalTimeslot.finalWorker = null;
 		      worker.finalTimeslot = null;
 		    }
-		    worker.setIsFinal(false);
-		    timeslot.setFinalWorker(null);
+		    worker.isFinal = false;
+		    timeslot.finalWorker = null;
 		  }
 		  //Update table
 		  update();
 		});
 
+		//Delete timeslot onclick
 		$(document).on('click', '.ui-droppable > button.close', function() {
-		    //Delete timeslot
 		    var name = $(this).parent().attr('id');
 		    for (var i = 0; i < timeslotList.length; i++) {
 			if (timeslotList[i].name == name) {
@@ -349,8 +356,8 @@
 		    update();
 		});
 
+		//Delete worker onclick
 		$(document).on('click', 'span.label > button.close', function() {
-		  //Delete Worker
 		  var workerName = $(this).parent().text().trim().substring(1);
 		  var worker = find(workerList, workerName);
 		  if (worker.isFinal) {
@@ -396,6 +403,7 @@
 	      console.log(workerList);
 	    }
 
+	    //Adds all workers to all timeslots
 	    function addAll() {
 	      $.each(timeslotList, function(index, timeslot) {
 		$.each(workerList, function(index, worker) {
@@ -407,6 +415,7 @@
 	      update();
 	    }
 
+	    //Finds an item in a list
 	    function find(list, name) {
 	      for (var i = 0; i < list.length; i++) {
 		if (name == list[i].name) {
@@ -416,6 +425,7 @@
 	      return null;
 	    }
 
+	    //Create worker function
 	    function createWorker(name) {
 	      workerList.push(new Worker(name));
 	      var workerAlert = "<span class='label'><button type='button' class='close'>&times;</button>" + name + "&nbsp;</span>";
@@ -427,6 +437,7 @@
 	      $("#workerDiv").append(clone);
 	    }
 
+	    //Create timeslot function
 	    function createTimeslot(time, day, name) {
 		var t = new Timeslot(time, day, name);
 		timeslotList.push(t);
@@ -449,6 +460,7 @@
 		$("table#schedule tbody tr#" + time).find("#" + day).append(clone);
 	    }
 
+	    //Show timeslot info div
 	    function timeslotInfo(link) {
 		//Show timeslot info
 		var div = $(link).parent();
@@ -461,10 +473,10 @@
 		});
 		var timeslotName = $(div).find('a').text();
 		var timeslot = find(timeslotList, timeslotName);
-		if (timeslot.getFinalWorker() == null) {
+		if (!timeslot.finalWorker) {
 		  $("#timeslot-info-select").val('none');
 		} else {
-		  $("#timeslot-info-select").val(timeslot.getFinalWorker().name);
+		  $("#timeslot-info-select").val(timeslot.finalWorker.name);
 		}
 		$("#timeslot-info-name").text(timeslotName);
 		//Show info div
