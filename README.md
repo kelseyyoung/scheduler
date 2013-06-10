@@ -6,10 +6,10 @@ This is a simple webapp I created to solve my semi-annual scheduling headache. I
 To Run
 =========
 
--Clone/fork the repo 
--Place the directory in a server root
--Visit [your server]/scheduler
-
+-Clone/fork the repo\n
+-Place the directory in a server root\n
+-Visit [your server]/scheduler\n
+\n
 And viola! Start scheduling!
 
 Contributing
