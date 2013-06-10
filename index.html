@@ -227,6 +227,7 @@
 		      <h4 id="timeslot-info-name"></h4>
 		      <select id="timeslot-info-select"></select>
 		      <button type="button" class="btn btn-primary" id="choose-worker">Choose Worker</button>
+		      <button type="button" class="btn btn-danger" id="delete-worker">Delete Worker</button>
 		    </div>
 		</div>
 	    </div>
@@ -304,9 +305,15 @@
 		    var worker = find(workerList, workerName);
 		    var oldFinalWorker = timeslot.getFinalWorker();
 		    //Set objects
-		    if (workerName != "--None--") {
+		    if (workerName != "none") {
+		      if (worker.finalTimeslot) {
+			worker.finalTimeslot.finalWorker = null;
+			worker.finalTimeslot = null;
+		      }
 		      worker.setIsFinal(true);
+		      worker.finalTimeslot = timeslot;
 		      if (oldFinalWorker) {
+			oldFinalWorker.finalTimeslot = null;
 			oldFinalWorker.setIsFinal(false);
 		      }
 		      timeslot.setFinalWorker(worker);
@@ -314,12 +321,19 @@
 		      if (oldFinalWorker) {
 			oldFinalWorker.setIsFinal(false);
 		      }
+		      if (worker.finalTimeslot) {
+			worker.finalTimeslot.finalWorker = null;
+			worker.finalTimeslot = null;
+		      }
+		      worker.setIsFinal(false);
 		      timeslot.setFinalWorker(null);
 		    }
 		    //Reset everyone to available
-		    reset();
+		    //reset();
 		    //Iterate through all workers, if they are final, set all spans
 		    //to unavailable
+		    update();
+		    /*
 		    for (var i = 0; i < workerList.length; i++) {
 		      var worker = workerList[i];
 		      if (worker.isFinal) {
@@ -346,6 +360,7 @@
 			});
 		      }
 		    }
+		    */
 
 		});
 
@@ -358,26 +373,50 @@
 			}
 		    }
 		    $(this).parent().remove(); 
+		    update();
 		});
 
 	    });
 
 	    /** Functions **/
 
-	    function addAll() {
-	      $.each(timeslotList, function(tindex, tvalue) {
-		var div = $("div#" + tvalue.name);
-		console.log($(div));
-		$.each(workerList, function(windex, wvalue) {
-		  var name = wvalue.name;
-		  $(div).find("div.workers").append("<span class='available " + name + "'>" + name + " </span>");
-		  var index = timeslotList.indexOf(tvalue);
-		  timeslotList[index].addPossibleWorker(name);
+	    function update() {
+	      //updates the table with timeslot/worker info
+	      console.log(timeslotList);
+	      console.log(workerList);
+	      $.each(timeslotList, function(index, timeslot) {
+		var tdiv = $("div#" + timeslot.name);
+		var workersDiv = $(tdiv).find('div.workers');
+		//Clear out worker div
+		$(workersDiv).empty();
+		var workers = timeslot.possibleWorkers;
+		console.log(workers);
+		$.each(workers, function(index, worker) {
+		  var workStatus;
+		  if (timeslot.finalWorker && timeslot.finalWorker.name == worker.name) {
+		    workStatus = "final";
+		  } else if (worker.isFinal || timeslot.finalWorker) {
+		    workStatus = "unavailable";
+		  } else {
+		    workStatus = "available";
+		  }
+		  $(workersDiv).append(
+		    "<span class='" + workStatus + " " + worker.name + "'>" + worker.name + " </span>");
 		});
 	      });
-	      console.log(timeslotList);
+
 	    }
 
+	    function addAll() {
+	      $.each(timeslotList, function(index, timeslot) {
+		$.each(workerList, function(index, worker) {
+		  timeslot.addPossibleWorker(worker);
+		});
+	      });
+	      update();
+	    }
+
+	    /*
 	    function reset() {
 	      //Iterate through all worker spans and set them to available
 	      $.each($("div.workers > span"), function() {
@@ -385,6 +424,7 @@
 		$(this).addClass('available');
 	      });
 	    }
+	    */
 
 	    function find(list, name) {
 	      for (var i = 0; i < list.length; i++) {
@@ -396,8 +436,7 @@
 	    }
 
 	    function createWorker(name) {
-	      var s = new Worker(name);
-	      workerList.push(s);
+	      workerList.push(new Worker(name));
 	      var workerAlert = "<span>" + name + " </span>";
 	      var clone = $(workerAlert).clone();
 	      $(clone).draggable({
@@ -408,8 +447,8 @@
 	    }
 
 	    function createTimeslot(time, day, name) {
-		var s = new Timeslot(time, day, name);
-		timeslotList.push(s);
+		var t = new Timeslot(time, day, name);
+		timeslotList.push(t);
 		var timeslotDiv = "<div id='" + name + "' class='alert'><button type='button' class='close'>&times;</button><a onclick='timeslotInfo(this)'>" + name + "</a><div class='workers'></div></div>";
 		var clone = $(timeslotDiv).clone();
 		$(clone).droppable({
@@ -419,7 +458,7 @@
 			var exists = $(this).find("div.workers > span." + name).length;
 			if (!exists) {
 			  $(this).find("div.workers").append("<span class='available " + name + "'>" + name + " </span>");
-			  var index = timeslotList.indexOf(s);
+			  var index = timeslotList.indexOf(t);
 			  timeslotList[index].addPossibleWorker(name);
 			}
 		      }
