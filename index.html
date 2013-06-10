@@ -248,7 +248,6 @@
 	      - drag workers to timeslot in sidebar? so it's not so far to drag
 	      - BUG: if worker is already final, and you add them to a new timeslot,
 		they are available in the new timeslot
-	      - BUG: if drag and drop all, then click add all, huge error
 	      - timeslots of different length
 	      - timeslots starting and ending at different points
 	      - setup page?
@@ -401,7 +400,9 @@
 	    function addAll() {
 	      $.each(timeslotList, function(index, timeslot) {
 		$.each(workerList, function(index, worker) {
-		  timeslot.addPossibleWorker(worker);
+		  if (!find(timeslot.possibleWorkers, worker.name)) {
+		    timeslot.addPossibleWorker(worker);
+		  }
 		});
 	      });
 	      update();
@@ -436,11 +437,13 @@
 		    hoverClass: "alert-success",
 		    drop: function(event, ui) {
 			var name = $(ui.draggable).text().trim().substring(1);
-			var exists = $(this).find("div.workers > span." + name).length;
+			var exists = find(t.possibleWorkers, name); 
 			if (!exists) {
 			  $(this).find("div.workers").append("<span class='available " + name + "'>" + name + " </span>");
 			  var index = timeslotList.indexOf(t);
-			  timeslotList[index].addPossibleWorker(name);
+			  var worker = find(workerList, name);
+			  timeslotList[index].addPossibleWorker(worker);
+			  update();
 			}
 		      }
 		});
