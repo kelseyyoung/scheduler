@@ -6,6 +6,13 @@ function Timeslot(time, day, name) {
     this.finalWorker = null;
 };
 
+//Overwrite Array remove
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
+
 Timeslot.prototype.setFinalWorker = function(worker) {
     this.finalWorker = worker;
 };
@@ -24,7 +31,9 @@ Timeslot.prototype.addPossibleWorker = function(worker) {
 
 Timeslot.prototype.removePossibleWorker = function(worker) {
     var index = this.possibleWorkers.indexOf(worker);
-    this.possibleWorkers.remove(index)
+    if (index >= 0) {
+      this.possibleWorkers.remove(index)
+    }
 };
 
 Timeslot.prototype.setTime = function(time) {
