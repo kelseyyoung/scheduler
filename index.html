@@ -231,7 +231,6 @@
 		      <h4 id="timeslot-info-name"></h4>
 		      <select id="timeslot-info-select"></select>
 		      <button type="button" class="btn btn-primary" id="choose-worker">Choose Worker</button>
-		      <button type="button" class="btn btn-danger" id="delete-worker">Delete Worker</button>
 		    </div>
 		</div>
 	    </div>
@@ -245,8 +244,8 @@
 	<script type="text/javascript">
 
 	    /*TODO:
+	      - BUG: need to update on delete timeslot
 	      - drag workers to timeslot in sidebar? so it's not so far to drag
-	      - BUG: if worker is already final, and you add them to a new timeslot,
 		they are available in the new timeslot
 	      - timeslots of different length
 	      - timeslots starting and ending at different points
@@ -338,7 +337,7 @@
 		    var name = $(this).parent().attr('id');
 		    for (var i = 0; i < timeslotList.length; i++) {
 			if (timeslotList[i].name == name) {
-			  if (timeslotList.finalWorker) {
+			  if (timeslotList[i].finalWorker) {
 			    timeslotList[i].finalWorker.isFinal = false;
 			    timeslotList[i].finalWorker.finalTimeslot = null;
 			  }
