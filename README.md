@@ -11,6 +11,10 @@ To Run
 -Visit [your server]/scheduler<br />
 And viola! Start scheduling!
 
+Demo
+=========
+<a href="http://www.kelseyjyoung.com/scheduler">Click here</a>
+
 Contributing
 =========
 Feedback/comments/pull requests are welcome.
