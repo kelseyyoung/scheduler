@@ -1,0 +1,32 @@
+body {
+    padding: 5px;
+}
+a {
+    cursor: pointer;
+}
+.available {
+    color: green;
+}
+.unavailable {
+    color: red;
+}
+.final {
+    color: blue;
+}
+div#table-wrapper {
+  overflow: auto;
+}
+table#schedule {
+  table-layout: fixed;
+  width: 1000px;
+}
+div.well.well-small.no-margin {
+  margin: 0px;
+}
+span.label {
+  margin-right: 2px;
+}
+span.label > button.close {
+  line-height: 14px;
+  margin-top: -3px;
+}

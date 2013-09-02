@@ -4,41 +4,8 @@
 	<link rel="stylesheet" href="js/bootstrap/css/bootstrap.css">
 	<link rel="stylesheet" href="js/bootstrap/css/bootstrap-responsive.css">
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css">
+	<link rel="stylesheet" href="css/index.css">
 	<title>Scheduler</title>
-	<style type="text/css">
-	    body {
-		padding: 5px;
-	    }
-	    a {
-		cursor: pointer;
-	    }
-	    .available {
-		color: green;
-	    }
-	    .unavailable {
-		color: red;
-	    }
-	    .final {
-		color: blue;
-	    }
-	    div#table-wrapper {
-	      overflow: auto;
-	    }
-	    table#schedule {
-	      table-layout: fixed;
-	      width: 1000px;
-	    }
-	    div.well.well-small.no-margin {
-	      margin: 0px;
-	    }
-	    span.label {
-	      margin-right: 2px;
-	    }
-	    span.label > button.close {
-	      line-height: 14px;
-	      margin-top: -3px;
-	    }
-	</style>
     </head>
     <body>
 	<div class="container-fluid">
@@ -378,8 +345,10 @@
 
 	    /** Functions **/
 
+	    /**
+	     * Updates the table with timeslot/worker info
+	     */
 	    function update() {
-	      //updates the table with timeslot/worker info
 	      $.each(timeslotList, function(index, timeslot) {
 		var tdiv = $("div#" + timeslot.name);
 		var workersDiv = $(tdiv).find('div.workers');
@@ -403,7 +372,9 @@
 	      console.log(workerList);
 	    }
 
-	    //Adds all workers to all timeslots
+	    /**
+	     * Adds all workers to all timeslots
+	     */
 	    function addAll() {
 	      $.each(timeslotList, function(index, timeslot) {
 		$.each(workerList, function(index, worker) {
@@ -415,7 +386,14 @@
 	      update();
 	    }
 
-	    //Finds an item in a list
+	    /**
+	     * Finds a worker or timeslot in their respective list
+	     * Parameters
+	     *	list - {Array} list to search in
+	     *	name - {String} worker or timeslot to find
+	     * Returns
+	     *	item looking for, or null if not found
+	     */
 	    function find(list, name) {
 	      for (var i = 0; i < list.length; i++) {
 		if (name == list[i].name) {
@@ -425,7 +403,11 @@
 	      return null;
 	    }
 
-	    //Create worker function
+	    /**
+	     * Creates a worker
+	     * Parameters
+	     *	name - {String} name of worker to create
+	     */
 	    function createWorker(name) {
 	      workerList.push(new Worker(name));
 	      var workerAlert = "<span class='label'><button type='button' class='close'>&times;</button>" + name + "&nbsp;</span>";
@@ -437,7 +419,13 @@
 	      $("#workerDiv").append(clone);
 	    }
 
-	    //Create timeslot function
+	    /**
+	     * Creates a timeslot
+	     * Parameters
+	     *	time {String} time of the timeslot
+	     *	day {String} day of the timeslot
+	     *	name {String} name of the timeslot
+	     */
 	    function createTimeslot(time, day, name) {
 		var t = new Timeslot(time, day, name);
 		timeslotList.push(t);
@@ -460,7 +448,11 @@
 		$("table#schedule tbody tr#" + time).find("#" + day).append(clone);
 	    }
 
-	    //Show timeslot info div
+	    /**
+	     * Shows the info div for a timeslot
+	     * Parameters
+	     *	link {HTML link} link clicked on table
+	     */
 	    function timeslotInfo(link) {
 		//Show timeslot info
 		var div = $(link).parent();
